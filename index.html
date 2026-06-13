@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anton Nikulsin — Portfolio</title>
+  <meta name="description" content="Project portfolio of Anton Nikulsin." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ===== Header / Hero ===== -->
+  <header class="hero">
+    <nav class="nav">
+      <a href="#" class="nav__brand">AN</a>
+      <ul class="nav__links">
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="hero__content">
+      <h1 class="hero__title">Hi, I'm Anton.</h1>
+      <p class="hero__subtitle">
+        Developer building useful things. Here's a selection of my work.
+      </p>
+      <a href="#projects" class="btn">View my projects</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== Projects ===== -->
+    <section id="projects" class="section">
+      <h2 class="section__title">Projects</h2>
+      <div class="projects">
+        <!-- Add or duplicate a card to list a new project -->
+        <article class="card">
+          <div class="card__thumb" aria-hidden="true"></div>
+          <div class="card__body">
+            <h3 class="card__title">Project One</h3>
+            <p class="card__desc">
+              A short description of what this project does and the problem it solves.
+            </p>
+            <ul class="card__tags">
+              <li>HTML</li>
+              <li>CSS</li>
+              <li>JavaScript</li>
+            </ul>
+            <div class="card__links">
+              <a href="#">Live demo</a>
+              <a href="#">Source</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card__thumb" aria-hidden="true"></div>
+          <div class="card__body">
+            <h3 class="card__title">Project Two</h3>
+            <p class="card__desc">
+              A short description of what this project does and the problem it solves.
+            </p>
+            <ul class="card__tags">
+              <li>Python</li>
+              <li>API</li>
+            </ul>
+            <div class="card__links">
+              <a href="#">Live demo</a>
+              <a href="#">Source</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card__thumb" aria-hidden="true"></div>
+          <div class="card__body">
+            <h3 class="card__title">Project Three</h3>
+            <p class="card__desc">
+              A short description of what this project does and the problem it solves.
+            </p>
+            <ul class="card__tags">
+              <li>React</li>
+              <li>Node</li>
+            </ul>
+            <div class="card__links">
+              <a href="#">Live demo</a>
+              <a href="#">Source</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== About ===== -->
+    <section id="about" class="section section--alt">
+      <h2 class="section__title">About</h2>
+      <p class="about__text">
+        Write a couple of sentences about yourself here — your background, what you
+        enjoy working on, and what you're looking for. Keep it short and friendly.
+      </p>
+    </section>
+
+    <!-- ===== Contact ===== -->
+    <section id="contact" class="section">
+      <h2 class="section__title">Contact</h2>
+      <p class="contact__text">Want to get in touch? Reach out.</p>
+      <div class="contact__links">
+        <a href="mailto:you@example.com">Email</a>
+        <a href="https://github.com/AntonN19">GitHub</a>
+        <a href="#">LinkedIn</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; <span id="year"></span> Anton Nikulsin</p>
+  </footer>
+
+  <script>
+    // Auto-update the footer year
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
