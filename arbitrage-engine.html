@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sports Betting &amp; Arbitrage Engine — Anton Nikulsin</title>
+  <meta name="description" content="Live demo and design overview of the sports betting and arbitrage engine." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ===== Header / Hero ===== -->
+  <header class="hero">
+    <nav class="nav">
+      <a href="index.html" class="nav__brand">AN</a>
+      <ul class="nav__links">
+        <li><a href="index.html#projects">Projects</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="hero__content">
+      <a href="index.html#projects" class="back-link">&larr; Back to projects</a>
+      <h1 class="hero__title">Sports Betting &amp; Arbitrage Engine</h1>
+      <p class="hero__subtitle">
+        A sports betting engine designed to allow for live arbitrage detection and almost immediate trade execution.
+      </p>
+      <ul class="card__tags">
+        <li>ReactJS</li>
+        <li>Java</li>
+        <li>Python</li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== Demo video ===== -->
+    <section class="section section--wide">
+      <h2 class="section__title">Live demo</h2>
+      <div class="demo">
+        <div class="demo__player">
+          <video
+            id="demoVideo"
+            class="demo__video"
+            src="assets/ArbitrageTraderDemo.mp4"
+            controls
+            muted
+            loop
+            playsinline
+            preload="metadata"
+            aria-label="Demo video of the arbitrage trader in action"
+          ></video>
+          <p class="demo__caption">
+            <!-- TODO: Add a short caption describing what the demo shows. -->
+            A walkthrough of the arbitrage trader executing a trade.
+          </p>
+        </div>
+
+        <!-- Chapters: edit data-time ("m:ss") and the label for each.
+             Add or remove <li> items to match your video. -->
+        <aside class="chapters" aria-label="Video chapters">
+          <h3 class="chapters__title">Chapters</h3>
+          <ol class="chapters__list">
+            <li>
+              <button class="chapter" type="button" data-time="0:00">
+                <span class="chapter__time">0:00</span>
+                <span class="chapter__label">Logging into betting websites</span>
+              </button>
+            </li>
+            <li>
+              <button class="chapter" type="button" data-time="1:25">
+                <span class="chapter__time">1:25</span>
+                <span class="chapter__label">Selecting a league to recieve odds for</span>
+              </button>
+            </li>
+            <li>
+              <button class="chapter" type="button" data-time="1:50">
+                <span class="chapter__time">1:50</span>
+                <span class="chapter__label">Executing a trade from the platform</span>
+              </button>
+            </li>
+          </ol>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===== Overview ===== -->
+    <section class="section section--alt">
+      <h2 class="section__title">Overview</h2>
+      <p class="about__text">
+        <!-- TODO: Write a 2–3 sentence summary of the project: the problem it
+             solves, who it's for, and what makes it interesting. -->
+        This project started as a hobby when I was working on engineering trading platforms at JP Morgan Chase. 
+        I implemented arbitrage detection and live execution for five United States based bookies. In September of 2025 I moved to the United Kingdom to pursue my MSc degree, which
+        led me to add two UK bookies with a third one currently in progress. Moneyline markets are currently supported for all bookies with the goal of adding more markets as this platform grows.
+      </p>
+    </section>
+
+    <!-- ===== How it's designed ===== -->
+    <section class="section">
+      <h2 class="section__title">How it's designed</h2>
+      <p class="design-intro">
+        The engine is built from four components: <strong>Reference Data</strong>
+        builds a database of competition and sport ids for each bookie, the <strong>Connector</strong> streams live
+        odds and watches for arbitrage opportunities, the <strong>Arbitrage Trader</strong> handles execution logic, 
+        and the <strong>front-end</strong> is the user interface. Curretly, Process Manager 2 (PM2) is used to start
+        and monitor this application.
+      </p>
+      <div class="design-grid">
+        <article class="design-card">
+          <h3 class="design-card__title">Front-end UI</h3>
+          <ul class="card__tags"><li>ReactJS</li><li>Protobuf</li></ul>
+          <p class="design-card__desc">
+            A single-page React app where the user chooses which competitions to track and
+            watches live odds and arbitrage alerts update. It holds a persistent
+            WebSocket open to the Connector — sending subscribe / unsubscribe requests and
+            receiving streaming odds, arbitrage flags, and disconnect notices when a market drops. 
+            The websocket messages use Protobuf to keep latency at a minimum.
+          </p>
+        </article>
+
+        <article class="design-card">
+          <h3 class="design-card__title">Reference Data</h3>
+          <ul class="card__tags"><li>Java</li><li>Maven</li><li>Spring Boot</li><li>SQL</li></ul>
+          <p class="design-card__desc">
+            Queries each supported bookmaker's APIs for their sport and competition identifiers
+            and combines everything into a single H2 database the rest of the system maps
+            against. Because many of these sites use anti-bot protection, it uses
+            <a href="https://github.com/zhkl0228/impersonator" target="_blank" rel="noopener">impersonator</a>
+            to spoof genuine browser TLS fingerprints and slip past modern detection algorithms.
+          </p>
+        </article>
+
+        <article class="design-card">
+          <h3 class="design-card__title">Connector</h3>
+          <ul class="card__tags"><li>Java</li><li>Maven</li><li>Spring Boot</li><li>Protobuf</li></ul>
+          <p class="design-card__desc">
+            This is where most of the logic lives. The connector opens WebSocket
+            connections to each bookmaker to stream live odds for the subscribed competitions,
+            forwards that data to the front-end, and writes the latest prices into an
+            internal data structure that flags arbitrage opportunities the instant they
+            appear.
+          </p>
+        </article>
+
+        <article class="design-card">
+          <h3 class="design-card__title">Arbitrage Trader</h3>
+          <ul class="card__tags"><li>Python</li><li>CDP</li></ul>
+          <p class="design-card__desc">
+            A Python API for logging in, placing bets, and checking balances across the
+            supported platforms through simple calls. To avoid bot detection at login it uses 
+            <a href="https://github.com/cdpdriver/zendriver" target="_blank" rel="noopener">zendriver</a> which
+            drives automated Chrome sessions using the Chrome DevTools Protocol (CDP).
+            The authenticated sessions are then persisted allowing bets requests to be sent directly to each 
+            platform's API via curl_cffi, Python's TLS fingerprint impersonator — keeping execution fast when an arbitrage window opens.
+          </p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; <span id="year"></span> Anton Nikulsin</p>
+  </footer>
+
+  <script>
+    // Auto-update the footer year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // ===== Video chapters: click a chapter to seek the video =====
+    (function () {
+      const video = document.getElementById("demoVideo");
+      const chapters = Array.from(document.querySelectorAll(".chapter"));
+      if (!video || !chapters.length) return;
+
+      // Parse "90", "1:30" or "1:02:03" into seconds.
+      const toSeconds = (t) =>
+        String(t)
+          .split(":")
+          .map(Number)
+          .reduce((acc, part) => acc * 60 + part, 0);
+
+      chapters.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          video.currentTime = toSeconds(btn.dataset.time);
+          video.play();
+        });
+      });
+
+      // Highlight the chapter matching the current playback position.
+      video.addEventListener("timeupdate", () => {
+        let active = null;
+        for (const btn of chapters) {
+          if (video.currentTime + 0.25 >= toSeconds(btn.dataset.time)) active = btn;
+        }
+        chapters.forEach((btn) =>
+          btn.classList.toggle("chapter--active", btn === active)
+        );
+      });
+    })();
+  </script>
+</body>
+</html>
