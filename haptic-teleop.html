@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Haptic Teleoperation — Anton Nikulsin</title>
+  <meta name="description" content="Live demo and design overview of haptic teleoperation." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ===== Header / Hero ===== -->
+  <header class="hero">
+    <nav class="nav">
+      <a href="index.html" class="nav__brand">AN</a>
+      <ul class="nav__links">
+        <li><a href="index.html#projects">Projects</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="hero__content">
+      <a href="index.html#projects" class="back-link">&larr; Back to projects</a>
+      <h1 class="hero__title">Haptic Teleoperation</h1>
+      <p class="hero__subtitle">
+        This is an ongoing project which will be a part of my masters dissertation. The progress made thus far is demonstrated below.
+      </p>
+      <ul class="card__tags">
+        <li>Python</li>
+        <li>ESP-32</li>
+        <li>C++</li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== Demo video ===== -->
+    <section class="section section--wide">
+      <h2 class="section__title section__title--demo">Live demo</h2>
+      <div class="demo demo--solo">
+        <div class="demo__player">
+          <video
+            id="demoVideo"
+            class="demo__video"
+            src="assets/HapticTeleopDemo.mp4"
+            controls
+            muted
+            loop
+            playsinline
+            preload="metadata"
+            aria-label="Demo video of haptic teleoperation in action"
+          ></video>
+          <p class="demo__caption">
+            Current system
+          </p>
+        </div>
+
+        <!-- Chapters: edit data-time ("m:ss") and the label for each.
+             Add or remove <li> items to match your video. -->
+        <!-- <aside class="chapters" aria-label="Video chapters">
+          <h3 class="chapters__title">Chapters</h3>
+          <ol class="chapters__list">
+            <li>
+              <button class="chapter" type="button" data-time="0:00">
+                <span class="chapter__time">0:00</span>
+                <span class="chapter__label">Intro</span>
+              </button>
+            </li>
+            <li>
+              <button class="chapter" type="button" data-time="0:30">
+                <span class="chapter__time">0:30</span>
+                <span class="chapter__label">Second chapter</span>
+              </button>
+            </li>
+            <li>
+              <button class="chapter" type="button" data-time="1:00">
+                <span class="chapter__time">1:00</span>
+                <span class="chapter__label">Third chapter</span>
+              </button>
+            </li>
+          </ol>
+        </aside> -->
+      </div>
+    </section>
+
+    <!-- ===== Overview ===== -->
+    <section class="section section--band">
+      <h2 class="section__title">Overview</h2>
+      <p class="about__text">
+        Haptic teleoperation lets a person operate a robotic hand from a distance
+        while feeling what it touches. The operator's hand is tracked with an
+        ordinary webcam and mirrored in real time by a servo-driven robotic hand,
+        and pressure sensors on the robot's fingertips measure contact and send it
+        back to the operator. The goal of this dissertation is to close that loop
+        with wearable haptic devices, so the operator can both command the hand and
+        feel its grip — improving dexterity and confidence in remote manipulation.
+      </p>
+    </section>
+
+    <!-- ===== System flow ===== -->
+    <section class="section">
+      <h2 class="section__title">System flow</h2>
+      <p class="design-intro">
+        The system runs as a closed loop with two data paths. The
+        <strong>feedforward</strong> path captures the operator's motion and mirrors
+        it onto the robot; the <strong>feedback</strong> path measures contact at the
+        robot's fingertips and returns it to the operator.
+      </p>
+
+      <!-- Feedforward path -->
+      <div class="flow">
+        <p class="flow__label">Feedforward · control</p>
+        <ol class="flow__steps">
+          <li class="flow-step">
+            <span class="flow-step__name">Operator's hand</span>
+            <span class="flow-step__desc">Captured live as the operator moves.</span>
+            <span class="flow-step__tech">Webcam</span>
+          </li>
+          <li class="flow-arrow" aria-hidden="true">&rarr;</li>
+          <li class="flow-step">
+            <span class="flow-step__name">Vision &amp; retargeting</span>
+            <span class="flow-step__desc">OpenCV detects hand keypoints; <a href="https://github.com/dexsuite/dex-retargeting" target="_blank" rel="noopener">dex-retargeting</a> maps them to robot joint angles.</span>
+            <span class="flow-step__tech">Python</span>
+          </li>
+          <li class="flow-arrow" aria-hidden="true">&rarr;</li>
+          <li class="flow-step">
+            <span class="flow-step__name">ESP32 controller</span>
+            <span class="flow-step__desc">Joint angles stream over the COM port to firmware that drives the servos.</span>
+            <span class="flow-step__tech">C++ · Serial</span>
+          </li>
+          <li class="flow-arrow" aria-hidden="true">&rarr;</li>
+          <li class="flow-step">
+            <span class="flow-step__name">Robotic hand</span>
+            <span class="flow-step__desc">Servos move to the commanded angles, mirroring the operator.</span>
+            <span class="flow-step__tech">Servos</span>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Feedback path -->
+      <div class="flow">
+        <p class="flow__label">Feedback · sensing</p>
+        <ol class="flow__steps">
+          <li class="flow-step">
+            <span class="flow-step__name">Fingertip sensors</span>
+            <span class="flow-step__desc">A magnet in silicone over a Hall-effect sensor measures contact force.</span>
+            <span class="flow-step__tech">Hall effect</span>
+          </li>
+          <li class="flow-arrow" aria-hidden="true">&rarr;</li>
+          <li class="flow-step">
+            <span class="flow-step__name">Laptop</span>
+            <span class="flow-step__desc">Reads the pressure signal streamed back from each fingertip.</span>
+            <span class="flow-step__tech">Serial</span>
+          </li>
+          <li class="flow-arrow" aria-hidden="true">&rarr;</li>
+          <li class="flow-step flow-step--planned">
+            <span class="flow-step__name">Haptic devices</span>
+            <span class="flow-step__desc">Vibrotactile, pressure, and electrotactile cues render the measured force.</span>
+            <span class="flow-step__tech">Wearable</span>
+          </li>
+          <li class="flow-arrow" aria-hidden="true">&rarr;</li>
+          <li class="flow-step flow-step--planned">
+            <span class="flow-step__name">Operator feels grip</span>
+            <span class="flow-step__desc">Closing the loop back to the operator's hand.</span>
+            <span class="flow-step__tech">Human</span>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===== How it's designed ===== -->
+    <section class="section section--band">
+      <h2 class="section__title">How it's designed</h2>
+      <p class="design-intro">
+        Four components make up the loop: <strong>hand tracking</strong> turns webcam
+        video into robot joint angles, the <strong>ESP32 firmware</strong> drives the
+        servos, the <strong>robotic hand</strong> performs the motion, and the
+        <strong>fingertip sensors</strong> measure what it touches.
+      </p>
+      <div class="design-grid">
+        <article class="design-card">
+          <h3 class="design-card__title">Hand tracking &amp; retargeting</h3>
+          <ul class="card__tags"><li>Python</li><li>OpenCV</li><li>dex-retargeting</li></ul>
+          <p class="design-card__desc">
+            A webcam feed is processed with OpenCV to detect hand keypoints, and
+            <a href="https://github.com/dexsuite/dex-retargeting" target="_blank" rel="noopener">dex-retargeting</a> maps those keypoints onto the robotic hand's kinematics
+            to produce target joint positions. This runs on the laptop and streams
+            the joint commands over a serial (COM) port to the ESP32.
+          </p>
+        </article>
+
+        <article class="design-card">
+          <h3 class="design-card__title">ESP32 firmware</h3>
+          <ul class="card__tags"><li>C++</li><li>ESP32</li></ul>
+          <p class="design-card__desc">
+            A C++ program on the ESP32 receives the joint-position messages over the
+            serial link and converts them into position commands for the servos,
+            turning the retargeted motion into physical movement of the hand.
+          </p>
+        </article>
+
+        <article class="design-card">
+          <h3 class="design-card__title">Robotic hand</h3>
+          <ul class="card__tags"><li>Servos</li></ul>
+          <p class="design-card__desc">
+            The hand is actuated by servos — one per controlled joint — that follow
+            the angles streamed from the ESP32, so the robot mirrors the operator's
+            hand in real time.
+          </p>
+        </article>
+
+        <article class="design-card">
+          <h3 class="design-card__title">Fingertip pressure sensing</h3>
+          <ul class="card__tags"><li>Hall-effect sensor</li><li>Magnet</li><li>Silicone</li></ul>
+          <p class="design-card__desc">
+            Each fingertip carries a custom sensor: a magnet embedded in silicone
+            sits above a Hall-effect sensor, so contact deforms the silicone and
+            shifts the magnetic field it reads. The resulting force signals are sent
+            back to the laptop and form the basis of the haptic feedback loop.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== What's next ===== -->
+    <section class="section">
+      <h2 class="section__title">What's next</h2>
+      <p class="design-intro">
+        The control path and fingertip sensing are working; the remaining work
+        focuses on calibration, the feedback hardware, and evaluation.
+      </p>
+      <ul class="roadmap">
+        <li class="roadmap__item">
+          <h3>Normalise the fingertip sensors</h3>
+          <p>Calibrate the Hall-effect fingertip sensors so their readings are consistent and comparable across all fingers.</p>
+        </li>
+        <li class="roadmap__item">
+          <h3>Design the haptic feedback devices</h3>
+          <p>Build wearable vibrotactile, pressure, and electrotactile devices that render the measured fingertip forces back to the operator.</p>
+        </li>
+        <li class="roadmap__item">
+          <h3>Test with human subjects</h3>
+          <p>Evaluate the full teleoperation loop with human participants to measure how haptic feedback affects dexterity and task performance.</p>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; <span id="year"></span> Anton Nikulsin</p>
+  </footer>
+
+  <script>
+    // Auto-update the footer year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // ===== Video chapters: click a chapter to seek the video =====
+    (function () {
+      const video = document.getElementById("demoVideo");
+      const chapters = Array.from(document.querySelectorAll(".chapter"));
+      if (!video || !chapters.length) return;
+
+      // Parse "90", "1:30" or "1:02:03" into seconds.
+      const toSeconds = (t) =>
+        String(t)
+          .split(":")
+          .map(Number)
+          .reduce((acc, part) => acc * 60 + part, 0);
+
+      chapters.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          video.currentTime = toSeconds(btn.dataset.time);
+          video.play();
+        });
+      });
+
+      // Highlight the chapter matching the current playback position.
+      video.addEventListener("timeupdate", () => {
+        let active = null;
+        for (const btn of chapters) {
+          if (video.currentTime + 0.25 >= toSeconds(btn.dataset.time)) active = btn;
+        }
+        chapters.forEach((btn) =>
+          btn.classList.toggle("chapter--active", btn === active)
+        );
+      });
+    })();
+  </script>
+</body>
+</html>

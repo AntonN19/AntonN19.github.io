@@ -104,10 +104,25 @@ a:hover { text-decoration: underline; }
 
 .section--wide { max-width: 1200px; }
 
+/* Full-width shaded band behind a section that keeps its centred content column,
+   so headings stay aligned with the text below them. */
+.section--band {
+  background: var(--bg-alt);
+  box-shadow: 0 0 0 100vmax var(--bg-alt);
+  clip-path: inset(0 -100vmax);
+}
+
 .section__title {
   font-size: 1.6rem;
   margin: 0 0 2rem;
 }
+
+/* Left edge matches the centred demo video (.demo--solo .demo__player). */
+.section__title--demo { max-width: 900px; margin-inline: auto; }
+
+/* In the full-width alt section each child is centred independently, so match the
+   heading's column width to the paragraph's (.about__text) so their left edges line up. */
+.section--alt .section__title { max-width: 105ch; }
 
 /* ===== Project cards ===== */
 .projects {
@@ -142,6 +157,8 @@ a:hover { text-decoration: underline; }
 
 .card__thumb--logo { background: #000; }
 
+.card__thumb--logo-light { background: #fff; }
+
 .card__thumb-img {
   width: 100%;
   height: 100%;
@@ -167,6 +184,10 @@ a:hover { text-decoration: underline; }
 @media (min-width: 720px) {
   .demo { grid-template-columns: minmax(0, 1fr) 240px; }
 }
+
+/* Demo shown without a chapters sidebar: single, centred column. */
+.demo--solo { grid-template-columns: 1fr; }
+.demo--solo .demo__player { width: 100%; max-width: 900px; margin-inline: auto; }
 
 .demo__player { display: flex; flex-direction: column; gap: 0.75rem; }
 
@@ -281,3 +302,100 @@ a:hover { text-decoration: underline; }
   color: var(--muted);
   font-size: 0.9rem;
 }
+
+/* ===== System flow diagram ===== */
+.flow { margin: 0 0 2.5rem; }
+.flow:last-child { margin-bottom: 0; }
+
+.flow__label {
+  margin: 0 0 0.9rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.flow__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+@media (min-width: 760px) {
+  .flow__steps { flex-direction: row; align-items: stretch; }
+}
+
+.flow-step {
+  flex: 1 1 0;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.flow-step__name { font-weight: 600; font-size: 0.95rem; }
+.flow-step__desc { color: var(--muted); font-size: 0.82rem; line-height: 1.45; }
+.flow-step__tech {
+  margin-top: auto;
+  align-self: flex-start;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.12rem 0.55rem;
+}
+
+.flow-step--planned { border-style: dashed; background: transparent; }
+.flow-step--planned .flow-step__name::after {
+  content: "Planned";
+  margin-left: 0.5rem;
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.05rem 0.45rem;
+  vertical-align: middle;
+}
+
+.flow-arrow {
+  flex: 0 0 auto;
+  align-self: center;
+  color: var(--accent);
+  font-size: 1.3rem;
+  line-height: 1;
+  transform: rotate(90deg);
+}
+@media (min-width: 760px) {
+  .flow-arrow { transform: none; }
+}
+
+/* ===== Roadmap ===== */
+.roadmap {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.roadmap__item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+}
+.roadmap__item h3 { margin: 0 0 0.3rem; font-size: 1rem; }
+.roadmap__item p { margin: 0; color: var(--muted); font-size: 0.92rem; }
